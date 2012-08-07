@@ -4,8 +4,8 @@ import annotation.tailrec
 import io.Source
 import java.io.{File, InputStream}
 import com.codahale.jerkson.Json._
-import org.codehaus.jackson.JsonNode
-import org.codehaus.jackson.node.NullNode
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.NullNode
 
 /**
  * An exception class thrown when there is a configuration error.
