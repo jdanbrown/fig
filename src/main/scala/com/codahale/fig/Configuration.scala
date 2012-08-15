@@ -3,7 +3,7 @@ package com.codahale.fig
 import annotation.tailrec
 import io.Source
 import java.io.{File, InputStream}
-import com.codahale.jerkson.Json._
+import com.codahale.jerkson.{Json, Parser}
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.NullNode
 
@@ -21,11 +21,11 @@ class ConfigurationException(message: String) extends Exception(message)
  *
  * @author coda
  */
-class Configuration private(path: Seq[String], root: JsonNode) {
+class Configuration private(json: Parser, path: Seq[String], root: JsonNode) {
   /**
    * Returns the root as an instance of type A.
    */
-  def as[A](implicit mf: Manifest[A]): A = parse[A](root)
+  def as[A](implicit mf: Manifest[A]): A = json.parse[A](root)
 
   /**
    * Returns the root as an instance of type Option[A]. If the root exists,
@@ -68,19 +68,34 @@ class Configuration private(path: Seq[String], root: JsonNode) {
   } else as[Map[String, A]]
 
   /**
+   * Read a configuration file with a custom JSON parser.
+   */
+  def this(filename: String, json: Parser) = this(json, Seq(), json.parse[JsonNode](new File(filename)))
+
+  /**
+   * Read configuration from an input stream with a custom JSON parser.
+   */
+  def this(stream: InputStream, json: Parser) = this(json, Seq(), json.parse[JsonNode](stream))
+
+  /**
+   * Read configuration from a source with a custom JSON parser.
+   */
+  def this(source: Source, json: Parser) = this(json, Seq(), json.parse[JsonNode](source))
+
+  /**
    * Read a configuration file.
    */
-  def this(filename: String) = this(Seq(), parse[JsonNode](new File(filename)))
+  def this(filename: String) = this(filename, Json)
 
   /**
    * Read configuration from an input stream.
    */
-  def this(stream: InputStream) = this(Seq(), parse[JsonNode](stream))
+  def this(stream: InputStream) = this(stream, Json)
 
   /**
-   * Read configuration from a source.a
+   * Read configuration from a source.
    */
-  def this(source: Source) = this(Seq(), parse[JsonNode](source))
+  def this(source: Source) = this(source, Json)
 
   /**
    * Given a dot-notation JSON path (e.g., "parent.child.fieldname"), returns
@@ -88,7 +103,7 @@ class Configuration private(path: Seq[String], root: JsonNode) {
    */
   def apply(path: String) = {
     val pathList = path.split('.').toList
-    new Configuration(pathList, traverse(root, pathList))
+    new Configuration(json, pathList, traverse(root, pathList))
   }
 
   @tailrec
