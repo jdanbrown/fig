@@ -6,7 +6,7 @@
 
     <groupId>com.codahale</groupId>
     <artifactId>fig_2.9.0-1</artifactId>
-    <version>1.1.7-jdanbrown</version>
+    <version>1.1.7-jdanbrown-1</version>
     <name>Fig for Scala ${scala.version}</name>
 
     <properties>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.codahale</groupId>
             <artifactId>jerkson_${scala.version}</artifactId>
-            <version>0.4.1</version>
+            <version>0.6.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.codahale</groupId>
